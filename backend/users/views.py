@@ -1,3 +1,4 @@
+import os
 import requests
 import traceback
 from decouple import config
@@ -226,7 +227,7 @@ class UserLoginAPIVIew(ObtainAuthToken):
             except User.DoesNotExist:
                 return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
             
-            if not constant_time_compare(user.password, make_password(password=password, salt=user.salt, hasher=config('HASHER'))):
+            if not constant_time_compare(user.password, make_password(password=password, salt=user.salt, hasher=os.environ.get('HASHER'))):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
             
             # if not user.emailConfirmed:
@@ -338,7 +339,7 @@ class UserUpdateApiView(generics.UpdateAPIView):
                 if 'password' in request.data:                        
                     new_password = request.data['password']
                     salt = user_instance.salt
-                    user_serializer.validated_data['password'] = make_password(password=new_password, salt=salt, hasher=config('HASHER'))
+                    user_serializer.validated_data['password'] = make_password(password=new_password, salt=salt, hasher=os.environ.get('HASHER'))
                 user_serializer.save()
         
                 return Response({'message': 'Updates made successfully', "id": user_id}, status=status.HTTP_200_OK)
@@ -482,7 +483,7 @@ class PasswordResetConfirmAPIView(APIView):
                 salt = user_instance.salt
                 if user_serializer.is_valid():
                     if new_password:
-                        user_serializer.validated_data['password'] = make_password(password=new_password, salt=salt, hasher=config('HASHER'))
+                        user_serializer.validated_data['password'] = make_password(password=new_password, salt=salt, hasher=os.environ.get('HASHER'))
                         user_serializer.save()
                         return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
                     else:

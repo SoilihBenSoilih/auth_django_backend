@@ -4,6 +4,7 @@ from django.contrib.auth.hashers import make_password
 from .models import User
 import uuid
 from .validators import CustomValidators
+import os
 from decouple import config
 from utils.uuid import is_valid_uuid
 
@@ -43,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         
         # hash password
         salt = generate_salt()
-        password = make_password(password=validated_data['password'], salt=salt, hasher=config('HASHER'))     
+        password = make_password(password=validated_data['password'], salt=salt, hasher=os.environ.get('HASHER'))     
         validated_data['password'] = password
         validated_data['salt'] = salt
         
