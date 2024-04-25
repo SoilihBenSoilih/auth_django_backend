@@ -44,7 +44,7 @@ class UserSerializer(serializers.ModelSerializer):
         
         # hash password
         salt = generate_salt()
-        password = make_password(password=validated_data['password'], salt=salt, hasher=os.environ.get('HASHER'))     
+        password = make_password(password=validated_data['password'], salt=salt, hasher=config('HASHER'))     
         validated_data['password'] = password
         validated_data['salt'] = salt
         
