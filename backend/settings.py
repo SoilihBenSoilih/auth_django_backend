@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['https://auth.amara-sountoura.com', 'http://auth.amara-sountoura.com']
+ALLOWED_HOSTS = ['https://auth.amara-sountoura.com', 'http://auth.amara-sountoura.com', '.vercel.app']
 
 
 # Application definition
@@ -82,7 +82,8 @@ ROOT_URLCONF = 'backend.urls'
 
 CORS_ALLOWED_ORIGINS = [
     "https://auth.amara-sountoura.com",
-    "http://auth.amara-sountoura.com"
+    "http://auth.amara-sountoura.com",
+    ".vercel.app"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
