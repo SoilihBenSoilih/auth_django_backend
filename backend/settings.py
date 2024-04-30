@@ -50,7 +50,8 @@ INSTALLED_APPS = [
     
     # internal apps
     'api',
-    'users'
+    'users',
+    'emails'
 ]
 
 AUTH_USER_MODEL = 'users.User'
@@ -103,6 +104,16 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'backend.wsgi.application'
+
+
+# email settings
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = config('EMAIL_SENDER')
+EMAIL_HOST_PASSWORD = config('EMAIL_PASSWORD')
+EMAIL_USE_SSL = False
 
 
 # Database
