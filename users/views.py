@@ -63,7 +63,7 @@ class RegisterAPIView(APIView):
                     return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
         except Exception:  
-            return Response({'error': traceback.format_exc()}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({'error': "Could not create an account"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
 register_view = RegisterAPIView.as_view()
 
@@ -123,14 +123,7 @@ class EmailVerificationAPIView(APIView):
                 if user_serializer.is_valid():                    
                     uid = urlsafe_base64_encode(force_bytes(user.id))
                     verification_url = reverse('email_confirm', kwargs={'uidb64': uid}, request=request)
-                    send_email(
-                        [email],
-                        'test.dummy@gmail.com',
-                        'Email Verification',
-                        f'Please click the link below to verify your email address: {verification_url}',
-                        fail_silently=False,
-                    )
-                    return Response({'message': 'Email verification email sent', 'url':verification_url}, status=status.HTTP_200_OK)
+                    return Response({'message': 'Email verification email sent', "uid64":uid}, status=status.HTTP_200_OK)
             return Response({'error': 'User with this email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         
         except Exception:
@@ -230,8 +223,8 @@ class UserLoginAPIVIew(ObtainAuthToken):
             if not constant_time_compare(user.password, make_password(password=password, salt=user.salt, hasher=config('HASHER'))):
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
             
-            # if not user.emailConfirmed:
-            #     return Response({'error': 'email not confirmed'}, status=status.HTTP_401_UNAUTHORIZED)
+            if not user.emailConfirmed:
+                return Response({'error': 'email not confirmed'}, status=status.HTTP_401_UNAUTHORIZED)
             
             # validate request data and get token
             serializer = self.serializer_class(data=data, context={'request': request})
@@ -257,7 +250,6 @@ class CustomTokenRefreshView(APIView):
     """
     Custom view for token refresh.
     """
-    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         try:
             refresh_token = request.data.get('refresh')
@@ -432,15 +424,7 @@ class PasswordResetAPIView(APIView):
                 if user:
                     uid = urlsafe_base64_encode(force_bytes(user.id))
                     reset_url = reverse('password_reset_confirm', kwargs={'uidb64': uid}, request=request)
-                    #TODO: implement later
-                    # send_email(
-                    #     'Password Reset Request',
-                    #     f'Please click the link below to reset your password: {reset_url}',
-                    #     'from@example.com',
-                    #     [email],
-                    #     fail_silently=False,
-                    # )
-                    return Response({'message': 'Password reset email sent', 'url':reset_url}, status=status.HTTP_200_OK)
+                    return Response({'message': 'Password reset email sent', 'uid64':uid}, status=status.HTTP_200_OK)
             
             return Response({'error': 'User with this email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
         
