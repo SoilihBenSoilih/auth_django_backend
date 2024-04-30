@@ -28,7 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['https://auth.amara-sountoura.com', 'http://auth.amara-sountoura.com']
 
 
 # Application definition
@@ -81,8 +81,8 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'backend.urls'
 
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'https://localhost:3000',
+    "https://auth.amara-sountoura.com",
+    "http://auth.amara-sountoura.com"
 ]
 
 CORS_ALLOW_CREDENTIALS = True
