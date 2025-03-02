@@ -26,9 +26,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['https://auth.amara-sountoura.com', 'http://auth.amara-sountoura.com', '.vercel.app']
+ALLOWED_HOSTS = [
+    'https://auth.amara-sountoura.com',
+    'http://auth.amara-sountoura.com',
+    '127.0.0.1',
+    'localhost',
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:8000"
+]
 
 
 # Application definition
@@ -83,7 +91,11 @@ ROOT_URLCONF = 'backend.urls'
 CORS_ALLOWED_ORIGINS = [
     "https://auth.amara-sountoura.com",
     "http://auth.amara-sountoura.com",
-    ".vercel.app"
+    "http://localhost:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:8000",
+    'http://127.0.0.1',
+    'http://localhost'
 ]
 
 CORS_ALLOW_CREDENTIALS = True

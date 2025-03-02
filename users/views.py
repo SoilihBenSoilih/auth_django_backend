@@ -2,6 +2,7 @@ import os
 from decouple import config
 import requests
 import traceback
+import json
 
 from utils.email import send_email
 
@@ -206,7 +207,7 @@ class UserLoginAPIVIew(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         try:
             # get login informations
-            data = request.data.copy()
+            data = json.loads(request.data).copy()
             email = data.get('email')
             password = data.get('password')
             data['username'] = email
@@ -236,7 +237,19 @@ class UserLoginAPIVIew(ObtainAuthToken):
                 if response.status_code != 200:
                     return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
                 response_data.update(response.json())
-                return Response(response_data, status=status.HTTP_200_OK)
+                response = Response(response_data, status=status.HTTP_200_OK)
+
+                response.set_cookie(
+                    key="refreshToken",
+                    value=str(response_data.get('refresh')),
+                    httponly=False,
+                    secure=False,  # HTTPS obligatoire
+                    samesite="Lax", #"Strict",
+                    max_age= 60 * 60  # 7 jours
+                )
+                print("*************** Cookies ***************")
+                print(response.cookies)
+                return response
             
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
         
@@ -250,9 +263,11 @@ class CustomTokenRefreshView(APIView):
     """
     Custom view for token refresh.
     """
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         try:
-            refresh_token = request.data.get('refresh')
+            refresh_token = request.COOKIES.get("refreshToken")
             if not refresh_token:
                 return Response({'error': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
 
